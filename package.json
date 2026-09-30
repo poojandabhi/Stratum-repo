@@ -1,0 +1,59 @@
+{
+  "name": "stratum",
+  "productName": "Stratum",
+  "version": "2.0.0",
+  "description": "Layered image editor with Lightroom-style develop, RAW support and copy/paste settings",
+  "main": "main.js",
+  "author": "Poojan",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win nsis portable"
+  },
+  "devDependencies": {
+    "electron": "^43.7.6",
+    "electron-builder": "^26.0.0"
+  },
+  "build": {
+    "appId": "com.poojan.stratum",
+    "productName": "Stratum",
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*"
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true
+    },
+    "fileAssociations": [
+      {
+        "ext": [
+          "cr2",
+          "cr3",
+          "nef",
+          "arw",
+          "dng",
+          "raf",
+          "orf",
+          "rw2"
+        ],
+        "name": "Camera RAW",
+        "role": "Editor"
+      },
+      {
+        "ext": "stratum",
+        "name": "Stratum Project",
+        "role": "Editor"
+      }
+    ]
+  }
+}

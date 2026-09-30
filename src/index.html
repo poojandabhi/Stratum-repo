@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' app:; img-src 'self' data: blob: app:; script-src 'self' app: 'wasm-unsafe-eval'; worker-src 'self' blob: app:; style-src 'self' 'unsafe-inline' app:; font-src 'self' app: data:; connect-src 'self' app: data: blob:">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stratum</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="app">
+  <header class="menubar" id="menubar">
+    <div class="brand"><i></i><b>Stratum</b></div>
+    <div id="menus" style="display:flex;gap:2px"></div>
+    <div class="spacer"></div>
+    <div class="title" id="wintitle"></div>
+    <div class="spacer"></div>
+    <div class="docsize" id="docsize"></div>
+  </header>
+  <div class="options" id="options"></div>
+  <div id="main">
+    <nav class="tools" id="tools" aria-label="Tools"></nav>
+    <section class="work">
+      <div class="doctabs" id="doctabs" role="tablist" aria-label="Open documents"></div>
+      <div id="viewport">
+        <div class="pasteboard">
+          <div id="stage"><canvas id="view"></canvas><canvas id="over"></canvas></div>
+        </div>
+        <div id="drophint" hidden>Drop images or RAW files to open them</div>
+        <div class="busy" id="busy" hidden><i></i><span id="busyText">Rendering…</span></div>
+        <div class="welcome" id="welcome" hidden>
+          <div class="card">
+            <h1>Start editing</h1>
+            <p>Open photos, camera RAW files (CR2, CR3, NEF, ARW, DNG, RAF…), TIFFs or a Stratum project. You can also drop files here or paste an image or a copied file with <kbd>Ctrl V</kbd>.</p>
+            <div class="row-btns"><button class="btn primary" id="wOpen">Open files…</button><button class="btn" id="wNew">New document…</button><button class="btn" id="wSample">Load sample</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <aside class="dock" id="dock">
+      <div class="dock-tabs" role="tablist">
+        <button id="tabDevelop" class="on" role="tab">Develop</button>
+        <button id="tabLayers" role="tab">Layers</button>
+      </div>
+      <div id="paneDevelop"></div>
+      <div id="paneLayers" hidden>
+        <section class="pnl">
+          <h2>Color</h2>
+          <div class="pnl-body">
+            <div class="color-row">
+              <div class="bigchip" id="fgBig" title="Foreground color"><input type="color" id="fgPick" aria-label="Foreground color"></div>
+              <div class="bigchip" id="bgBig" title="Background color" style="width:30px;height:30px"><input type="color" id="bgPick" aria-label="Background color"></div>
+              <div class="color-meta">
+                <div class="hexrow"><label for="fgHex">FG</label><input id="fgHex" maxlength="7" spellcheck="false"></div>
+                <div class="hexrow"><label for="bgHex">BG</label><input id="bgHex" maxlength="7" spellcheck="false"></div>
+              </div>
+            </div>
+            <div class="swatches" id="swatches"></div>
+            <div class="mini"><button class="btn" id="swapBtn" title="Swap colors (X)">Swap</button><button class="btn" id="resetBtn" title="Default colors (D)">Default</button></div>
+          </div>
+        </section>
+        <section class="pnl">
+          <h2>Layers <span id="layerCount" style="font-family:var(--mono);letter-spacing:0"></span></h2>
+          <div class="pnl-body">
+            <div class="layer-ctl">
+              <select id="blend" aria-label="Blend mode"></select>
+              <label class="op">Opacity <input type="number" id="opNum" min="0" max="100"></label>
+              <input type="range" id="opRange" min="0" max="100" aria-label="Layer opacity">
+            </div>
+            <div id="layers"></div>
+            <div class="layer-actions">
+              <button class="icon-btn" id="lUp" title="Bring forward"></button>
+              <button class="icon-btn" id="lDown" title="Send backward"></button>
+              <button class="icon-btn" id="lMerge" title="Merge down"></button>
+              <button class="icon-btn" id="lDup" title="Duplicate layer"></button>
+              <button class="icon-btn" id="lNew" title="New layer"></button>
+              <button class="icon-btn" id="lDel" title="Delete layer"></button>
+            </div>
+          </div>
+        </section>
+        <section class="pnl" style="border-bottom:0">
+          <h2>History <span id="histCount" style="font-family:var(--mono);letter-spacing:0"></span></h2>
+          <div class="pnl-body"><div id="history"></div></div>
+        </section>
+      </div>
+    </aside>
+  </div>
+  <div class="film" id="film" aria-label="Filmstrip"></div>
+  <footer class="status">
+    <input id="zoomBox" aria-label="Zoom level">
+    <span id="stSize"></span>
+    <span id="stPos">X — Y —</span>
+    <span id="stSel"></span>
+    <span class="grow" id="stHint"></span>
+  </footer>
+</div>
+<input type="file" id="fileIn" multiple hidden>
+<div class="scrim" id="modal" hidden>
+  <div class="dialog" id="dialog" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <h3 id="mTitle"></h3>
+    <div class="body" id="mBody"></div>
+    <div class="foot"><label id="mPrevWrap" class="opt"><input type="checkbox" id="mPrev" checked> Preview</label><div class="r"><button class="btn" id="mCancel">Cancel</button><button class="btn primary" id="mOk">OK</button></div></div>
+  </div>
+</div>
+<div id="toast" style="opacity:0" role="status"></div>
+<script src="vendor/pako.min.js"></script>
+<script src="vendor/UTIF.js"></script>
+<script src="dev-shared.js"></script>
+<script src="core.js"></script>
+<script src="develop.js"></script>
+<script src="io.js"></script>
+<script src="ui.js"></script>
+</body>
+</html>
